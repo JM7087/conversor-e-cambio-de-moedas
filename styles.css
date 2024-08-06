@@ -1,0 +1,145 @@
+/* Caminho: styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box; /* Certifique-se de incluir o padding no cálculo de altura */
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.controles {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 300px;
+}
+
+label {
+    text-align: center;
+}
+
+main {
+    flex-grow: 1;
+    width: 100%;
+    padding-top: 1.5rem;  
+    padding-bottom: 1.5rem; 
+}
+
+footer {
+    background-color: #007bff; 
+    color: #ffffff;           
+    text-align: center;        
+    padding: 1rem 0;           
+    margin-top: auto;
+    width: 100%;
+}
+
+.cor-link-rodape {
+    color: #ffffff;
+}
+
+.cor-nome-dev-rodape {
+    color: #cccccc;
+}
+
+.texto-rodape {
+    font-size: 100%;
+    text-align: left;
+}
+
+.moeda-select, .valor-input {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.moeda-select label, .valor-input label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.moeda-select select, .valor-input input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cotacoes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 95%;
+    margin: 20px;
+}
+
+.cotacao-item {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cotacao-item h2 {
+    color: #333;
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.cotacao-item p {
+    font-size: 30px;
+    margin: 10px 0 0;
+}
+
+.cotacao-item span {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+@media (min-width: 768px) {
+    .controles {
+        flex-direction: row;
+        max-width: 600px;
+    }
+
+    .moeda-select, .valor-input {
+        width: 50%;
+    }
+
+    .cotacoes-container {
+        flex-direction: row;
+        /* flex-wrap: wrap; */
+        justify-content: center;
+    }
+
+    .cotacao-item {
+        width: calc(50% - 15px);
+    }
+}
+
+@media (min-width: 1024px) {
+    .cotacoes-container {
+        max-width: 1100px;
+    }
+
+    .cotacao-item {
+        width: calc(33.33% - 15px);
+    }
+}
