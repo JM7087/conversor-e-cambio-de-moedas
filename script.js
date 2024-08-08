@@ -40,15 +40,23 @@ function atualizarInterface(resultados, moedaPrincipal) {
             document.getElementById(containerId).style.display = 'none';
         } else {
             document.getElementById(containerId).style.display = 'block';
-            document.getElementById(elementoId).textContent = resultados[moeda].toFixed(moeda === 'JPY' ? 2 : 2);
+            document.getElementById(elementoId).textContent = resultados[moeda].toFixed(2);
         }
     });
+
+    // Atualiza a data e hora da última atualização
+    const agora = new Date();
+    const dataHora = agora.toLocaleString('pt-BR', {
+        dateStyle: 'short',
+        timeStyle: 'short'
+    });
+    document.getElementById('ultima-atualizacao').textContent = `Última atualização: ${dataHora}`;
 }
 
 async function atualizarCotacoes() {
     const moedaPrincipal = document.getElementById('moeda-principal').value;
     const valor = parseFloat(document.getElementById('valor').value);
-    
+
     try {
         const dados = await obterCotacoes();
         const resultados = calcularConversoes(dados, moedaPrincipal, valor);
