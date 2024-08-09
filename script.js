@@ -46,11 +46,20 @@ function atualizarInterface(resultados, moedaPrincipal) {
 
     // Atualiza a data e hora da última atualização
     const agora = new Date();
-    const dataHora = agora.toLocaleString('pt-BR', {
-        dateStyle: 'short',
+
+    // Extrai a data e a hora separadamente
+    const data = agora.toLocaleDateString('pt-BR', {
+        dateStyle: 'short'
+    });
+    const hora = agora.toLocaleTimeString('pt-BR', {
         timeStyle: 'short'
     });
-    document.getElementById('ultima-atualizacao').textContent = `Última atualização: ${dataHora}`;
+
+    // Define o texto no formato desejado
+    const dataHoraFormatada = `${hora} de ${data}`;
+
+    document.getElementById('ultima-atualizacao').textContent = `Última atualização: ${dataHoraFormatada}`;
+
 }
 
 async function atualizarCotacoes() {
