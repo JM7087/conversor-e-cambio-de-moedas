@@ -12,6 +12,17 @@ async function obterCotacoes() {
     }
 }
 
+async function obterCotacoesHistoricas(moeda, moedaPrincipal) {
+    try {
+        const resposta = await fetch(`https://economia.awesomeapi.com.br/json/daily/${moeda}-${moedaPrincipal}/7`);
+        const dados = await resposta.json();
+        return dados.reverse(); // Reverter para exibir os dados em ordem cronológica
+    } catch (erro) {
+        console.error(`Erro ao obter cotações históricas de ${moeda}:`, erro);
+        throw erro;
+    }
+}
+
 function calcularConversoes(dados, moedaPrincipal, valor) {
     const resultados = {};
     moedas.forEach(moeda => {
@@ -22,14 +33,61 @@ function calcularConversoes(dados, moedaPrincipal, valor) {
             resultados[moeda] = valor / taxa;
         } else if (moeda === 'USD') {
             const taxa = parseFloat(dados[`${moedaPrincipal}USD`].bid);
-            resultados[moeda] = valor * taxa; // se for dolar a moeda multiplicar
+            resultados[moeda] = valor * taxa;
         } else {
             const taxaParaUSD = parseFloat(dados[`${moedaPrincipal}USD`].bid);
             const taxaDeUSD = parseFloat(dados[`${moeda}USD`].bid);
-            resultados[moeda] = (valor * taxaParaUSD) / taxaDeUSD; // se for outra moeda multiplicar antes de dividir
+            resultados[moeda] = (valor * taxaParaUSD) / taxaDeUSD;
         }
     });
     return resultados;
+}
+
+function criarGrafico(cotacoes, moeda, moedaPrincipal) {
+    const labels = cotacoes.map(item => new Date(item.timestamp * 1000).toLocaleDateString('pt-BR'));
+    const data = cotacoes.map(item => parseFloat(item.bid));
+
+    const canvasId = `grafico-${moeda.toLowerCase()}`;
+    const canvasElement = document.getElementById(canvasId);
+    const existingChart = Chart.getChart(canvasElement);
+
+    // Se já existir um gráfico, destrua-o antes de criar um novo
+    if (existingChart) {
+        existingChart.destroy();
+    }
+
+    new Chart(canvasElement.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: `Cotação ${moeda}/${moedaPrincipal}`,
+                data: data,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    beginAtZero: false
+                },
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+}
+
+async function atualizarInterfaceComGraficos(moedaPrincipal) {
+    moedas.forEach(async moeda => {
+        if (moeda !== moedaPrincipal) {
+            const cotacoesHistoricas = await obterCotacoesHistoricas(moeda, moedaPrincipal);
+            criarGrafico(cotacoesHistoricas, moeda, moedaPrincipal);
+        }
+    });
 }
 
 function atualizarInterface(resultados, moedaPrincipal) {
@@ -44,10 +102,7 @@ function atualizarInterface(resultados, moedaPrincipal) {
         }
     });
 
-    // Atualiza a data e hora da última atualização
     const agora = new Date();
-
-    // Extrai a data e a hora separadamente
     const data = agora.toLocaleDateString('pt-BR', {
         dateStyle: 'short'
     });
@@ -55,11 +110,8 @@ function atualizarInterface(resultados, moedaPrincipal) {
         timeStyle: 'short'
     });
 
-    // Define o texto no formato desejado
     const dataHoraFormatada = `${hora} de ${data}`;
-
     document.getElementById('ultima-atualizacao').textContent = `Última atualização: ${dataHoraFormatada}`;
-
 }
 
 async function atualizarCotacoes() {
@@ -70,6 +122,7 @@ async function atualizarCotacoes() {
         const dados = await obterCotacoes();
         const resultados = calcularConversoes(dados, moedaPrincipal, valor);
         atualizarInterface(resultados, moedaPrincipal);
+        atualizarInterfaceComGraficos(moedaPrincipal);
     } catch (erro) {
         moedas.forEach(moeda => {
             const elementoId = `cotacao-${moeda.toLowerCase()}`;
@@ -81,8 +134,5 @@ async function atualizarCotacoes() {
 document.getElementById('moeda-principal').addEventListener('change', atualizarCotacoes);
 document.getElementById('valor').addEventListener('input', atualizarCotacoes);
 
-// Inicializar
 atualizarCotacoes();
-
-// Atualiza as cotações a cada 30 segundos
 setInterval(atualizarCotacoes, 30000);
