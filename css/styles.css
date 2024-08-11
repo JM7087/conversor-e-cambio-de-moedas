@@ -136,7 +136,7 @@ footer {
 
 @media (min-width: 1024px) {
     .cotacoes-container {
-        max-width: 1100px;
+        max-width: 990px;
     }
 
     .cotacao-item {
